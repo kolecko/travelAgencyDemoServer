@@ -1,0 +1,105 @@
+<definitions xmlns:tns="http://localhost:3001/booking"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+             xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:ns="http://localhost:3001/booking/types" name="Booking"
+             targetNamespace="http://localhost:3001/booking">
+    <types>
+        <xsd:schema xmlns="http://localhost:3001/booking/types"
+                    targetNamespace="http://localhost:3001/booking/types">
+            <xsd:complexType name="order">
+                <xsd:sequence>
+                    <xsd:element name="customer_id" type="xsd:int"/>
+                    <xsd:element name="offer_id" type="xsd:int"/>
+                    <xsd:element name="date_from" type="xsd:date"/>
+                    <xsd:element name="date_to" type="xsd:date"/>
+                    <xsd:element name="persons" type="xsd:int"/>
+                    <xsd:element name="price" type="xsd:int"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:complexType name="orderDates">
+                <xsd:sequence>
+                    <xsd:element name="date_from" type="xsd:date"/>
+                    <xsd:element name="date_to" type="xsd:date"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+
+            <xsd:complexType name="ordersDates">
+                <xsd:sequence>
+                    <xsd:element minOccurs="0" maxOccurs="unbounded" name="orderDates" nillable="true" type="ns:orderDates"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:element name="checkin" nillable="true" type="ns:order"/>
+            <xsd:complexType name="checkinResponse">
+                <xsd:sequence>
+                    <xsd:element name="success" type="xsd:boolean"/>
+                    <xsd:element name="id" type="xsd:string" />
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="notifyResponse" nillable="true" type="ns:checkinResponse"/>
+
+            <xsd:complexType name="checkedDates">
+                <xsd:sequence>
+                    <xsd:element name="offer_id" type="xsd:int"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:element name="checkedDates" nillable="true" type="ns:checkedDates"/>
+            <xsd:element name="checkedDatesResponse" nillable="true" type="ns:ordersDates"/>
+        </xsd:schema>
+    </types>
+
+    <message name="checkinRequest">
+        <part name="parameters" element="ns:checkin"/>
+    </message>
+    <message name="checkinResponse">
+        <part name="parameters" element="ns:checkinResponse"/>
+    </message>
+    <message name="checkedDatesRequest">
+        <part name="parameters" element="ns:checkedDates"/>
+    </message>
+    <message name="checkedDatesResponse">
+        <part name="parameters" element="ns:checkedDatesResponse"/>
+    </message>
+
+    <portType name="BookingPortType">
+        <operation name="checkin">
+            <input message="tns:checkinRequest"/>
+            <output message="tns:checkinResponse"/>
+        </operation>
+        <operation name="checkedDates">
+            <input message="tns:checkedDatesRequest"/>
+            <output message="tns:checkedDatesResponse"/>
+        </operation>
+    </portType>
+
+    <binding name="BookingBinding" type="tns:BookingPortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="checkin">
+            <soap:operation soapAction="http://localhost:3001/wsdl/booking#checkin"/>
+            <input>
+                <soap:body use="literal" namespace="http://localhost:3001/wsdl/booking"/>
+            </input>
+            <output>
+                <soap:body use="literal" namespace="http://localhost:3001/wsdl/booking"/>
+            </output>
+        </operation>
+        <operation name="checkedDates">
+            <soap:operation soapAction="http://localhost:3001/wsdl/booking#checkedDates"/>
+            <input>
+                <soap:body use="literal" namespace="http://localhost:3001/wsdl/booking"/>
+            </input>
+            <output>
+                <soap:body use="literal" namespace="http://localhost:3001/wsdl/booking"/>
+            </output>
+        </operation>
+    </binding>
+
+    <service name="BookingService">
+        <port name="BookingPort" binding="tns:BookingBinding">
+            <soap:address location="http://localhost:3001/wsdl/booking"/>
+        </port>
+    </service>
+</definitions>
